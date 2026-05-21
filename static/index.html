@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>RadioLink</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ===== SETUP VIEW ===== -->
+<div id="view-setup" class="view active">
+  <header>
+    <div class="logo">📡 RadioLink</div>
+    <div class="subtitle">Orientación de radioenlaces</div>
+  </header>
+
+  <form id="form-setup" autocomplete="off">
+    <div class="card">
+      <div class="card-title">🔴 Torre A</div>
+      <div class="field-row">
+        <label>Latitud<input type="number" id="lat_a" step="any" placeholder="-34.6037" required></label>
+        <label>Longitud<input type="number" id="lon_a" step="any" placeholder="-58.3816" required></label>
+      </div>
+      <div class="field-row">
+        <label>Altura antena (m)<input type="number" id="h_a" step="0.1" min="0" value="25" required></label>
+        <button type="button" class="btn-gps" onclick="getGPS('a')">📍 GPS</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔵 Torre B</div>
+      <div class="field-row">
+        <label>Latitud<input type="number" id="lat_b" step="any" placeholder="-34.5500" required></label>
+        <label>Longitud<input type="number" id="lon_b" step="any" placeholder="-58.4500" required></label>
+      </div>
+      <div class="field-row">
+        <label>Altura antena (m)<input type="number" id="h_b" step="0.1" min="0" value="25" required></label>
+        <button type="button" class="btn-gps" onclick="getGPS('b')">📍 GPS</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚙️ Parámetros</div>
+      <div class="field-row">
+        <label>Nombre del enlace<input type="text" id="link_name" placeholder="Enlace Centro-Norte" required></label>
+      </div>
+      <div class="field-row">
+        <label>Frecuencia (GHz)<input type="number" id="freq" step="0.1" min="0.1" value="5.8" required></label>
+        <label>Puntos de perfil<input type="number" id="pts" min="20" max="200" value="60" required></label>
+      </div>
+      <div class="role-selector">
+        <div class="role-label">Soy:</div>
+        <div class="role-btns">
+          <button type="button" id="btn-role-a" class="role-btn active" onclick="selectRole('A')">Torre A 🔴</button>
+          <button type="button" id="btn-role-b" class="role-btn" onclick="selectRole('B')">Torre B 🔵</button>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-primary" id="btn-calcular">
+      📐 Calcular enlace
+    </button>
+  </form>
+</div>
+
+<!-- ===== ORIENTATION VIEW ===== -->
+<div id="view-orientation" class="view">
+  <header class="header-compact">
+    <button class="btn-back" onclick="goBack()">← Volver</button>
+    <div class="link-name-header" id="header-name">—</div>
+    <div class="partner-dot" id="partner-dot" title="Estado del técnico en la otra torre"></div>
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat"><span class="stat-val" id="stat-dist">—</span><span class="stat-lbl">distancia</span></div>
+    <div class="stat"><span class="stat-val" id="stat-az">—</span><span class="stat-lbl">azimut</span></div>
+    <div class="stat"><span class="stat-val" id="stat-el">—</span><span class="stat-lbl">elevación</span></div>
+    <div class="stat"><span class="stat-val" id="stat-fresnel">—</span><span class="stat-lbl">Fresnel libre</span></div>
+  </div>
+
+  <div class="alignment-banner" id="alignment-banner">
+    <span id="alignment-text">Girá la antena hacia el azimut objetivo</span>
+  </div>
+
+  <div class="compass-wrapper">
+    <canvas id="compass" width="300" height="300"></canvas>
+    <div class="compass-hint" id="compass-hint">Apuntá el teléfono en la dirección de la antena</div>
+  </div>
+
+  <div class="partner-status" id="partner-status">
+    <span class="partner-icon">📡</span>
+    <span id="partner-text">Técnico en la otra torre: esperando conexión...</span>
+  </div>
+
+  <div class="card chart-card">
+    <div class="card-title">📈 Perfil de terreno</div>
+    <div class="chart-container">
+      <canvas id="profile-chart"></canvas>
+    </div>
+    <div class="chart-legend">
+      <span class="legend-item terrain">■ Terreno</span>
+      <span class="legend-item los">─ LOS</span>
+      <span class="legend-item obs">● Obstrucciones</span>
+    </div>
+  </div>
+
+  <div class="card" id="card-analysis">
+    <div class="card-title">📊 Análisis</div>
+    <div id="analysis-detail"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

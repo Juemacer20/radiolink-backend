@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from app.routers import links, ws
 from app.database import create_tables
 
@@ -29,3 +31,11 @@ app.include_router(ws.router, prefix="/ws", tags=["WebSocket"])
 @app.get("/health")
 async def health():
     return {"status": "ok", "service": "RadioLink API v1.0"}
+
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/static/index.html")
+
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
